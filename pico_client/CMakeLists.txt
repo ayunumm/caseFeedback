@@ -1,5 +1,6 @@
 add_executable(caseFeedback
         src/main.c
+        src/cli.c
 )
 
 target_link_libraries(caseFeedback
@@ -8,7 +9,7 @@ target_link_libraries(caseFeedback
 
 target_include_directories(caseFeedback
     PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 # target_link_libraries(caseFeedback PRIVATE caseFeedback_lib)
