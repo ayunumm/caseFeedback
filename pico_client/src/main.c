@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include "pico/stdlib.h"
+
 
 // Vi deklarerar dessa här uppe, men fyller dem med innehåll senare eller i en annan fil
 void initiera_allt();
 int las_av_knappar();
 void skicka_till_thingspeak(int betyg);
 void uppdatera_lcd(int betyg);
+
 
 int main() {
     initiera_allt(); // Startar knappar, wifi, lcd
