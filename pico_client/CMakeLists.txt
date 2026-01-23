@@ -1,39 +1,76 @@
-add_executable(caseFeedback
-        src/main.c
-)
+cmake_minimum_required(VERSION 3.16)
+cmake_policy(SET CMP0135 NEW)
 
-target_link_libraries(caseFeedback
-    pico_stdlib
-)
+option(PICO_BUILD "Build firmware for Pico" ON)
+option(PICO_TESTS_BUILD "Build tests" OFF)
 
-target_include_directories(caseFeedback
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# target_link_libraries(caseFeedback PRIVATE caseFeedback_lib)
+include(FetchContent)
 
-pico_add_extra_outputs(caseFeedback)
-pico_enable_stdio_usb(caseFeedback 1)
-pico_enable_stdio_uart(caseFeedback 1)
+if (PICO_BUILD)
+  message(STATUS "Including Pico SDK for firmware build")
+  FetchContent_Declare(
+    pico_sdk
+    GIT_REPOSITORY https://github.com/raspberrypi/pico-sdk.git
+    GIT_TAG master
+  )
+  FetchContent_MakeAvailable(pico_sdk)
+endif()
 
+project(pico_client LANGUAGES C CXX ASM)
 
-if(NOT PICO_PLATFORM)
-    include(CTest)
-    enable_testing()
+if (PICO_BUILD)
+  set(PICO_BOARD pico_w)
+  pico_sdk_init()
 
-    include(FetchContent)
-    FetchContent_Declare(
-        googletest
-        URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-    )
+  # olle needs to set this for compiling on arch-linux
+  set(CMAKE_EXECUTABLE_SUFFIX ".elf")
 
-    add_library(caseFeedback
-      src/test_lib.c
-    )
+  if (PICO_SDK_VERSION_STRING VERSION_LESS "1.3.0")
+      message(FATAL_ERROR "Raspberry Pi Pico version 1.3.0 (or later) required. Your version is ${PICO_SDK_VERSION_STRING}")
+  endif()
 
-    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(googletest)
+  add_executable(pico_client
+          src/main.c
+  )
 
-    add_subdirectory(tests)
+  target_link_libraries(pico_client
+      pico_stdlib
+  )
+
+  target_include_directories(pico_client
+      PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+
+  pico_add_extra_outputs(pico_client)
+  pico_enable_stdio_usb(pico_client 1)
+  pico_enable_stdio_uart(pico_client 1)
+endif()
+
+include(CTest)
+if (PICO_TESTS_BUILD AND NOT PICO_BUILD)
+  enable_testing()
+
+  FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+  )
+
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
+
+  add_library(pico_client_test_lib
+    src/test_lib.c
+  )
+
+  target_include_directories(pico_client_test_lib
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+
+  add_subdirectory(tests)
 endif()
