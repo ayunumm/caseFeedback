@@ -1,3 +1,5 @@
+#include "wifi.h"
+
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "lcd.h"
@@ -12,7 +14,7 @@ void send_to_thingspeak(int rating);
 void update_lcd(int rating);
 
 int main() {
-    nit_system(); // Starts buttons, WiFi, LCD
+    init_system(); // Starts buttons, WiFi, LCD
 
     // "Main control loop"
     while(1) {
@@ -57,8 +59,8 @@ void update_lcd(int rating) {
 }
 
 void init_system() {
+    // Här lägger vi gpio_init osv.
     stdio_init_all();
 
-    // GPIO init, WiFi init, etc. goes here
-
+    wifi_init();
 }
