@@ -31,3 +31,10 @@ cmake -B build -DPICO_BUILD=OFF -DPICO_TESTS_BUILD=ON
 cmake --build build
 ctest --output-on-failure
 ```
+# Raspberry Pi Pico W setup
+
+```
+<img width="1056" height="808" alt="image" src="https://github.com/user-attachments/assets/f034b3f5-f191-4720-bd3b-3e5743d7748a" />
+
+Note: Although not visible in the photo, the buttons are wired to GPIO6, GPIO7, and GPIO8 respectively, starting from the top.
+```
