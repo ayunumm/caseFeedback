@@ -37,7 +37,7 @@ if (PICO_BUILD)
     src/main.c
     src/wifi.c
     src/lcd.c
-    src/mqtt.c
+    src/communication.c
   )
 
   target_link_libraries(pico_client
@@ -46,8 +46,6 @@ if (PICO_BUILD)
 
     hardware_i2c
     hardware_gpio
-
-    pico_lwip_mqtt
   )
 
   target_include_directories(pico_client

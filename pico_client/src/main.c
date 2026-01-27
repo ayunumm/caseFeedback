@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "lcd.h"
+#include "communication.h"
 #include "hardware/i2c.h"
 #include "hardware/gpio.h"
 
 void init_system(void);
 int read_buttons(void);
-void send_to_thingspeak(int rating);
 void update_lcd(int rating);
 
 int main() {
@@ -18,7 +18,7 @@ int main() {
 
         if (rating > 0) {
             printf("Rating registered: %d\n", rating);
-            //send_to_thingspeak(rating);
+            send_to_thingspeak(rating);
             update_lcd(rating);
             sleep_ms(1000); 
         }
@@ -33,10 +33,6 @@ int read_buttons() {
     if (!gpio_get(8)) return 3;
 
     return 0;
-}
-
-void send_to_thingspeak(int rating) {
-    // WiFi code goes here
 }
 
 void update_lcd(int rating) {
@@ -80,6 +76,4 @@ void init_system() {
     lcd_clear();
     lcd_set_cursor(0, 0);
     lcd_print("System Ready");
-
-    //wifi_init();
 }
