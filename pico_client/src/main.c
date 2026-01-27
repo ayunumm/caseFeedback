@@ -1,61 +1,89 @@
 #include "wifi.h"
 #include "lcd.h"
 #include "tcp_communication.h"
-
-#include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
 #include "hardware/gpio.h"
+#include <stdio.h>
 
-// --- FUNCTION PROTOTYPES ---
-// We declare these here, but implement them later or in other files
 void init_system(void);
 int read_buttons(void);
 void update_lcd(int rating);
 
 int main() {
-    init_system(); // Starts buttons, WiFi, LCD
-
-    // "Main control loop"
+    init_system(); 
+    
     while(1) {
-        // 1. Check which button is pressed (returns 0 if none, otherwise 1-5)
         int rating = read_buttons();
 
-        // If we actually got a rating (someone pressed a button)
         if (rating > 0) {
             printf("Rating registered: %d\n", rating);
 
              // 2. Send rating to database/ThingSpeak
-            pico_send_to_thingspeak("40X4HZZGOCFNIR3I", 0);
+            pico_send_to_thingspeak("BZ3WIHTNRIFABJUO", rating);
              // 3. Update status on LCD Screen
             update_lcd(rating);
             
              // Debounce delay to avoid registering the same press multiple times
             sleep_ms(30000); 
-
         }
-        
         sleep_ms(50); // Save power/CPU cycles
     }
     return 0;
 }
 
-// --- IMPLEMENTATION DETAILS BELOW ---
-// (Your team members will fill these in)
-
 int read_buttons() {
-    // Here we place the loop that checks GPIO pins
-    // Return integer 1-5 if a button is pressed, otherwise 0
-    return 0; // Placeholder
+    if (!gpio_get(6)) return 1; 
+    if (!gpio_get(7)) return 2;
+    if (!gpio_get(8)) return 3;
+    
+    return 0;
 }
 
+
+
 void update_lcd(int rating) {
-    // LCD code goes here
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+
+    if (rating == 1) {
+        lcd_print("Bad");
+    } else if (rating == 2){
+        lcd_print("OK");
+    } else if (rating == 3) {
+        lcd_print("Good");
+    }
+
+    lcd_set_cursor(1, 0);
+    lcd_print("Thank you!");
 }
 
 void init_system() {
-    // Här lägger vi gpio_init osv.
     stdio_init_all();
+
+    gpio_init(6);
+    gpio_set_dir(6, GPIO_IN);
+    gpio_pull_up(6);
+
+    gpio_init(7);
+    gpio_set_dir(7, GPIO_IN);
+    gpio_pull_up(7);
+
+    gpio_init(8);
+    gpio_set_dir(8, GPIO_IN);
+    gpio_pull_up(8);
+
+    i2c_init(i2c0, 400000); 
+    gpio_set_function(0, GPIO_FUNC_I2C); 
+    gpio_set_function(1, GPIO_FUNC_I2C); 
+    gpio_pull_up(0);
+    gpio_pull_up(1);
+
+    lcd_init();
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_print("System Ready");
+    lcd_set_cursor(1, 0);
 
     wifi_init();
 }

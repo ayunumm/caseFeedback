@@ -55,7 +55,7 @@ if (PICO_BUILD)
 
   pico_add_extra_outputs(pico_client)
   pico_enable_stdio_usb(pico_client 1)
-  pico_enable_stdio_uart(pico_client 1)
+  pico_enable_stdio_uart(pico_client 0)
 endif()
 
 include(CTest)
