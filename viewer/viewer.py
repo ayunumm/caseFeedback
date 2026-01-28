@@ -5,13 +5,18 @@ import json
 
 app = Quart(__name__)
 
+with open("secrets.json", "r") as file:
+    secrets = json.load(file)
+
+API_KEY = secrets["api_key"]
+
 async def fetch(client, url):
     response = await client.get(url)
     return response.json()
 
 @app.route("/")
 async def index():
-    url = "https://api.thingspeak.com/channels/3233855/feeds.json?api_key=E7PV777HU2V2R513"
+    url = f"https://api.thingspeak.com/channels/3233855/feeds.json?api_key={API_KEY}"
 
     async with httpx.AsyncClient() as client:
         data = await fetch(client, url)
