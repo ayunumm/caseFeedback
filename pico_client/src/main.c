@@ -14,15 +14,39 @@ int main() {
     sleep_ms(3000); 
     init_system(); 
     
-    while(1) {
-        int rating = read_buttons();
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_print("How was the");
+    lcd_set_cursor(1, 0);
+    lcd_print("lession? :)");
 
+    int rating = 0;
+    while(1) {
+        rating = read_buttons();
         if (rating > 0) {
             printf("Rating registered: %d\n", rating);
             send_to_thingspeak(rating);
             update_lcd(rating);
-            sleep_ms(1000); 
-        }
+            absolute_time_t unlock_time = delayed_by_us(get_absolute_time(), 27 * 1000000);
+            while(absolute_time_diff_us(get_absolute_time(), unlock_time) > 0) {
+                int64_t remaining_time = absolute_time_diff_us(get_absolute_time(), unlock_time);
+                int remaining_seconds = remaining_time / 1000000;
+
+                lcd_clear();
+                lcd_set_cursor(0, 0);
+
+                char buf[16];
+                snprintf(buf, sizeof(buf), "Please wait: %d sec...", remaining_seconds);
+                lcd_print(buf);
+
+                sleep_ms(1000);
+            }
+
+            lcd_clear();
+            lcd_set_cursor(0, 0);
+            lcd_print("Next person!");
+        } 
+
         sleep_ms(50); // Save power/CPU cycles
     }
     return 0;
@@ -50,6 +74,10 @@ void update_lcd(int rating) {
 
     lcd_set_cursor(1, 0);
     lcd_print("Thank you!");
+
+    sleep_ms(3000);
+    lcd_clear();
+    lcd_set_cursor(0, 0);
 }
 
 void init_system() {
@@ -76,7 +104,7 @@ void init_system() {
     lcd_init();
     lcd_clear();
     lcd_set_cursor(0, 0);
-    lcd_print("System Ready");
 
     wifi_init();
+    lcd_print("System Ready");
 }
