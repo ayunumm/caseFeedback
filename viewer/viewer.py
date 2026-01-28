@@ -26,11 +26,11 @@ async def index():
         for feed in data["feeds"]:
             for value in feed.values():
                 if str(value) == "1":
-                    summary["green"] += 1
+                    summary["red"] += 1
                 if str(value) == "2":
                     summary["yellow"] += 1
                 if str(value) == "3":
-                    summary["red"] += 1
+                    summary["green"] += 1
 
     return await render_template("index.html", data=data, summary=summary)
 
