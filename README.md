@@ -11,7 +11,7 @@
 
 
 ## pico_client
-firmware for pico pi w.
+Firmware for pico pi w.
 
 ## viewer
 Web-based application for viewing the results of button presses.
