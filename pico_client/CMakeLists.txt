@@ -37,11 +37,13 @@ if (PICO_BUILD)
     src/main.c
     src/wifi.c
     src/lcd.c
+    src/communication.c
   )
 
   target_link_libraries(pico_client
     pico_stdlib
     pico_cyw43_arch_lwip_threadsafe_background
+
     hardware_i2c
     hardware_gpio
   )

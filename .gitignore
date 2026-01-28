@@ -2,3 +2,4 @@ build/
 tests/build/
 *.swp
 pico-sdk/
+secrets.h
